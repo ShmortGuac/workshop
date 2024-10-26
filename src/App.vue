@@ -26,7 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <body class="h-full bg-zinc-900">
+  <body class="h-screen bg-zinc-900">
     <p class="text">Shmort's To Do List</p>    
     <div class="div1 grid-cols-2 gap-2">
       <input class="taskbox" type="text" placeholder="Enter your task" v-model="title">
