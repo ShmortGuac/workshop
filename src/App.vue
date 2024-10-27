@@ -3,40 +3,31 @@ import { ref, onMounted } from 'vue';
 import PocketBase from 'pocketbase';
 
 const pb = new PocketBase('http://127.0.0.1:8090');
-const title = ref("");
-const desc = ref("");
-const readTask = ref([]);
+const wyrather = ref([]);
 
-async function submit(){
-  const data = {
-    "title": title.value,
-    "description": desc.value,
-  };
-  
-  await pb.collection('posts').create(data);
-  readTask.value.push(data);
-  console.log(readTask);
-}
+let choice = ref(0)
+let index = ref(0)
+
 
 onMounted(async () => {
-  const record = await pb.collection('posts').getFullList();
-  readTask.value = record;
+  const record = await pb.collection('questions').getFullList();
+  wyrather.value = record;
 });
+
+
 
 </script>
 
 <template>
   <body class="h-screen bg-zinc-900">
-    <p class="text">Shmort's To Do List</p>    
-    <div class="div1 grid-cols-2 gap-2">
-      <input class="taskbox" type="text" placeholder="Enter your task" v-model="title">
-      <input class="descbox" type="text" placeholder="Describe your task" v-model="desc">
-      <button class="button" @click="submit">CREATE TASK</button>
+    <p class="text">Would You Rather?</p>
+    <div v-if="wyrather.length == 0"   >Loading.....</div> 
+    <div v-else class="div1">
+      <button class="option1" @click = "choice=1"><p v-if="choice==1">{{ wyrather[index].chosen_1 }}% would rather</p>{{ wyrather[index].option_1}}</button>
+      <button class="option2" @click = "choice=1"><p v-if="choice==1">{{ wyrather[index].chosen_2 }}% would rather</p>{{ wyrather[index].option_2 }}</button>
+      
     </div>
-    <br>
-    <button class="task" v-for="item in readTask">
-      {{ item.title }}
-    </button>
+    <button class="task" v-if="choice==1" @click = "index++; choice=0; if (index == wyrather.length) {index = 0}">Click Here for next question </button>
   </body>
 </template>
 
@@ -66,72 +57,55 @@ onMounted(async () => {
 }
 
 .div1{
-  /*outline: 2px solid white;*/
-  align-content: center;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
 }
 
-.div2{
-  outline: 2px solid white;
-  align-content: center;
-}
+.option1{
 
-
-.taskbox{
-  margin-bottom: 7px;
-  margin-left: auto;
-  margin-right: auto;
   display: block;
-  font-size: 16px;
-  padding: 10px;
-  padding-left: 25px;
-  width: 40%;
-  max-width: 40%;
-  border-radius: 999999px;
-  background-color: rgb(39 39 42);;
-  color: rgb(248 250 252);
-  outline: 0px;
-  filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
-}
-
-.descbox{
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  font-size: 16px;
-  padding: 10px;
-  padding-left: 25px;
-  width: 40%;
-  max-width: 40%;
-  height: 70px;
-  border-radius: 20px;
-  background-color: rgb(39 39 42);;
-  color: rgb(248 250 252);
-  outline: 0px;
-  filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
-}
-
-.button{
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  font-size: 16px;
+  font-size: 40px;
   padding: 2px;
-  height: 30px;
-  width: 40%;
-  max-width: 40%;
-  border-radius: 999999px;
-  background-color: rgb(238, 102, 166);;
+  height: 30rem;
+  width: 30rem;
+  background-color: rgb(13, 146, 244);
+  border-radius: 30px;
   color: rgb(248 250 252);
   outline: 0px;
   filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
   transition: 0.1s;
 }
 
-.button:active{
+.option2{
+  display: block;
+  font-size: 40px;
+  padding: 2px;
+  height: 30rem;
+  width: 30rem;
+  background-color: rgb(198, 46, 46);
+  border-radius: 30px;
+  color: rgb(248 250 252);
+  outline: 0px;
+  filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+  transition: 0.1s;
+}
+
+.option1:active{
   transform: scale(0.95);
 }
 
+.option1:hover{
+  rotate: -3deg;
+}
+
+.option2:active{
+  transform: scale(0.95);
+}
+
+.option2:hover{
+  rotate: 3deg;
+}
 .task{
   display: block;
   margin-left: auto;
@@ -140,7 +114,7 @@ onMounted(async () => {
   margin-bottom: 10px;
   text-align: center;
   padding: 10px;
-  font-size: 20px;
+  font-size: 16px;
   color: rgb(248 250 252);
   border-style:solid ;
   border-color: rgb(248 250 252);
